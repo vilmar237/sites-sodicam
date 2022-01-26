@@ -127,16 +127,32 @@ trait Enqueue
             EAEL_PLUGIN_VERSION
         );
 
-        // localize object
-        $this->localize_objects = apply_filters('eael/localize_objects', [
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('essential-addons-elementor'),
-	        'i18n' => [
-	        	'added' => __('Added ', 'essential-addons-for-elementor-lite'),
-	        	'compare' => __('Compare', 'essential-addons-for-elementor-lite'),
-                'loading' => esc_html__('Loading...', 'essential-addons-for-elementor-lite')
-            ],
-        ]);
+        // register scroll to top assets
+        wp_register_style(
+            'eael-scroll-to-top',
+            EAEL_PLUGIN_URL . 'assets/front-end/css/view/scroll-to-top.min.css',
+            false,
+            EAEL_PLUGIN_VERSION
+        );
+
+        wp_register_script(
+            'eael-scroll-to-top',
+            EAEL_PLUGIN_URL . 'assets/front-end/js/view/scroll-to-top.min.js',
+            ['jquery'],
+            EAEL_PLUGIN_VERSION
+        );
+
+	    // localize object
+	    $this->localize_objects = apply_filters( 'eael/localize_objects', [
+		    'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+		    'nonce'          => wp_create_nonce( 'essential-addons-elementor' ),
+		    'i18n'           => [
+			    'added'   => __( 'Added ', 'essential-addons-for-elementor-lite' ),
+			    'compare' => __( 'Compare', 'essential-addons-for-elementor-lite' ),
+			    'loading' => esc_html__( 'Loading...', 'essential-addons-for-elementor-lite' )
+		    ],
+		    'page_permalink' => get_the_permalink(),
+	    ] );
 
         // edit mode
         if ($this->is_edit_mode()) {

@@ -111,7 +111,8 @@ trait Helper
             'read_more_link_target_blank' => $settings['read_more_link_target_blank'] ? 'target="_blank"' : '',
         ];
 
-        $template_info = $_REQUEST['template_info'];
+	    $template_info = $_REQUEST['template_info'];
+	    $template_info = array_map( 'sanitize_text_field', $template_info );
 
         if ( $template_info ) {
 
@@ -416,15 +417,19 @@ trait Helper
         $results = $post_list = [];
         switch($source_name){
             case 'taxonomy':
-                $post_list = wp_list_pluck( get_terms( $post_type,
-                    [
-                        'hide_empty' => false,
-                        'orderby'    => 'name',
-                        'order'      => 'ASC',
-                        'search'     => $search,
-                        'number'     => '5',
-                    ]
-                ), 'name', 'term_id' );
+	            $args = [
+		            'hide_empty' => false,
+		            'orderby'    => 'name',
+		            'order'      => 'ASC',
+		            'search'     => $search,
+		            'number'     => '5',
+	            ];
+
+	            if ( $post_type !== 'all' ) {
+		            $args['taxonomy'] = $post_type;
+	            }
+
+                $post_list = wp_list_pluck( get_terms( $args ), 'name', 'term_id' );
                 break;
             default:
                 $post_list = HelperClass::get_query_post_list( $post_type, 10, $search );
@@ -452,14 +457,18 @@ trait Helper
 
         switch ( $source_name ) {
             case 'taxonomy':
-                $response = wp_list_pluck( get_terms( sanitize_text_field( $_POST[ 'post_type' ] ),
-                    [
-                        'hide_empty' => false,
-                        'orderby'    => 'name',
-                        'order'      => 'ASC',
-                        'include'    => implode( ',', $ids ),
-                    ]
-                ), 'name', 'term_id' );
+	            $args = [
+		            'hide_empty' => false,
+		            'orderby'    => 'name',
+		            'order'      => 'ASC',
+		            'include'    => implode( ',', $ids ),
+	            ];
+
+	            if ( $_POST[ 'post_type' ] !== 'all' ) {
+		            $args['taxonomy'] = sanitize_text_field( $_POST[ 'post_type' ] );
+	            }
+
+                $response = wp_list_pluck( get_terms( $args ), 'name', 'term_id' );
                 break;
             default:
                 $post_info = get_posts( [ 'post_type' => sanitize_text_field( $_POST[ 'post_type' ] ), 'include' => implode( ',', $ids ) ] );
@@ -788,9 +797,9 @@ trait Helper
                             <img src="<?php echo EAEL_PLUGIN_URL . 'assets/admin/images/templately/logo.svg'; ?>" alt="">
                         </div>
                         <ul class="eael-promo-temp__feature__list">
-                            <li><?php _e('1,000+ Stunning Templates','essential-addons-for-elementor-lite'); ?></li>
+                            <li><?php _e('1,700+ Stunning Templates','essential-addons-for-elementor-lite'); ?></li>
                             <li><?php _e('Supports Elementor & Gutenberg','essential-addons-for-elementor-lite'); ?></li>
-                            <li><?php _e('Powering up 17,000+ Websites','essential-addons-for-elementor-lite'); ?></li>
+                            <li><?php _e('Powering up 100,000+ Websites','essential-addons-for-elementor-lite'); ?></li>
                             <li><?php _e('Cloud Collaboration with Team','essential-addons-for-elementor-lite'); ?></li>
                         </ul>
                         <form class="eael-promo-temp__form">
